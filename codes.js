@@ -11,7 +11,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: '', // Replace with your MySQL password
+    password: 'password', // Replace with your MySQL password
     database: 'db_voting'
 });
 
