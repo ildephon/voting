@@ -9,10 +9,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 // Create a connection to the MySQL database
 const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'password', // Replace with your MySQL password
-    database: 'votes'
+    host: 'bizhdi2fnyjg9ady7rgz-mysql.services.clever-cloud.com',
+    user: 'ueuwzb6hmvo3sack',
+    password: 'NBpbV7Xqltd2oqbhGo2m', // Replace with your MySQL password
+    database: 'bizhdi2fnyjg9ady7rgz'
 });
 
 // Connect to the database
