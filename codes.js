@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const mysql = require('mysql');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3306;
 
 app.use(bodyParser.urlencoded({ extended: false }));
 
@@ -11,7 +11,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 const db = mysql.createConnection({
     host: 'bizhdi2fnyjg9ady7rgz-mysql.services.clever-cloud.com',
     user: 'ueuwzb6hmvo3sack',
-    password: 'NBpbV7Xqltd2oqbhGo2m', // Replace with your MySQL password
+    password: 'bizhdi2fnyjg9ady7rgz', // Replace with your MySQL password
     database: 'bizhdi2fnyjg9ady7rgz'
 });
 
