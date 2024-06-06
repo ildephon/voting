@@ -12,7 +12,7 @@ const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'password', // Replace with your MySQL password
-    database: 'db_voting'
+    database: 'votes'
 });
 
 // Connect to the database
