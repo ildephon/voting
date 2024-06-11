@@ -12,7 +12,7 @@ const dbConfig = {
     host: 'bsdoik1kl4wgik01wjtr-mysql.services.clever-cloud.com',
     user: 'uqwtz4tgg9ew3jbm',
     password: 'JWZN28mJTGZTAyQYh2Md', // Replace with your MySQL password
-    database: 'baoivsz1j04goy1gqffg'
+    database: 'bsdoik1kl4wgik01wjtr'
 };
 
 let db;
