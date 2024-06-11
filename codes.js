@@ -96,7 +96,7 @@
           }
         }
                 async function getCandidates() {
-  const query = 'SELECT name FROM candidates'; // Replace with your actual query
+  const query = 'SELECT* FROM candidates'; // Replace with your actual query
   try {
     const results = await db.query(query);
     if (results.length === 0) {
