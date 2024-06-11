@@ -1,114 +1,102 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const mysql = require('mysql');
 
-const app = express();
-const PORT = process.env.PORT || 3306;
-
-app.use(bodyParser.urlencoded({ extended: false }));
-
-// Database connection details
-const dbConfig = {
-    host: 'bsdoik1kl4wgik01wjtr-mysql.services.clever-cloud.com',
-    user: 'uqwtz4tgg9ew3jbm',
-    password: 'JWZN28mJTGZTAyQYh2Md', // Replace with your MySQL password
-    database: 'bsdoik1kl4wgik01wjtr'
-};
-
-let db;
-
-// Function to handle connection
-function handleDisconnect() {
-    db = mysql.createConnection(dbConfig);
-
+        
+    const express = require('express');
+    const bodyParser = require('body-parser');
+    const mysql = require('mysql');
+    
+    const app = express();
+    const PORT = process.env.PORT || 3306;
+    
+    app.use(bodyParser.urlencoded({ extended: false }));
+    
+    // Create a connection to the MySQL database
+    const db = mysql.createConnection({
+      host: 'bsdoik1kl4wgik01wjtr-mysql.services.clever-cloud.com',
+      user: 'uqwtz4tgg9ew3jbm',
+      password: 'JWZN28mJTGZTAyQYh2Md',
+      database: 'bsdoik1kl4wgik01wjtr'
+    });
+    
+    // Connect to the database
     db.connect(err => {
-        if (err) {
-            console.error('Error connecting to database:', err.stack);
-            setTimeout(handleDisconnect, 2000); // Reconnect after 2 seconds
-        } else {
-            console.log('Connected to database.');
-        }
+      if (err) {
+        console.error('Database connection failed:', err.stack);
+        return;
+      }
+      console.log('Connected to database.');
     });
-
-    db.on('error', err => {
-        console.error('Database error:', err.stack);
-        if (err.code === 'PROTOCOL_CONNECTION_LOST') {
-            handleDisconnect(); // Reconnect on connection loss
-        } else {
-            throw err;
-        }
-    });
-}
-
-// Initial connection
-handleDisconnect();
-
-// In-memory storage for votes (for simplicity)
-let votes = {
-    "MUTESI. ": 0,
-    "ALICE. ": 0,
-    "ALINE. ": 0,
-    "ERIC. ": 0,
-    "HAWA. ": 0
-};
-
-// In-memory storage for user data (for simplicity)
-let userNames = {};
-let voters = new Set(); // Set to track phone numbers that have already voted
-let userLanguages = {}; // Object to store the language preference of each user
-
-app.post('/ussd', (req, res) => {
-    let response = '';
-
-    // Extract USSD input
-    const { sessionId, serviceCode, phoneNumber, text } = req.body;
-
-    // Parse user input
-    const userInput = text.split('*').map(option => option.trim());
-
-    // Determine next action based on user input
-    if (userInput.length === 1 && userInput[0] === '') {
+    
+    // In-memory storage for votes (for simplicity)
+    let votes = {}; // Empty object to store vote counts (optional for display)
+    
+    // In-memory storage for user data (for simplicity)
+    let userNames = {};
+    let voters = new Set(); // Set to track phone numbers that have already voted
+    let userLanguages = {}; // Object to store the language preference of each user
+    
+    async function getCandidates() {
+      const query = 'SELECT name FROM candidates'; // Replace with your actual query
+      try {
+        const results = await db.query(query);
+        return results.map(row => row.name); // Extract candidate names
+      } catch (err) {
+        console.error('Error fetching candidates:', err.stack);
+        return []; // Handle errors by returning an empty array
+      }
+    }
+    
+    app.post('/ussd', async (req, res) => {
+      let response = '';
+    
+      // Extract USSD input
+      const { sessionId, serviceCode, phoneNumber, text } = req.body;
+    
+      // Parse user input
+      const userInput = text.split('*').map(option => option.trim());
+    
+      // Determine next action based on user input
+      if (userInput.length === 1 && userInput[0] === '') {
         // First level menu: Language selection
-        response = `CON Welcome to Mayor voting booth\n`;
+        response = `CON Welcome to ildephonse voting booth\n`;
         response += `1. English\n`;
-        response += `2. Kinyarwanda`;
-    } else if (userInput.length === 1 && userInput[0] !== '') {
+        response += `2. kinyarwanda`;
+      } else if (userInput.length === 1 && userInput[0] !== '') {
         // Save user's language choice and move to the name input menu
-        userLanguages[phoneNumber] = userInput[0] === '1' ? 'en' : 'rw';
-        response = userLanguages[phoneNumber] === 'en' ? 
-            `CON Please enter your name:` : 
-            `CON Injira izina ryawe:`;
-    } else if (userInput.length === 2) {
+        userLanguages[phoneNumber] = userInput[0] === '1' ? 'en' : 'sw';
+        response = userLanguages[phoneNumber] === 'en' ?
+          `CON Please enter your name:` :
+          `CON andika izina ryawe:`;
+      } else if (userInput.length === 2) {
         // Save user's name
         userNames[phoneNumber] = userInput[1];
-
+    
         // Third level menu: Main menu
-        response = userLanguages[phoneNumber] === 'en' ? 
-            `CON Hi ${userNames[phoneNumber]}, choose an option:\n1. Vote Candidate\n2. View Votes` : 
-            `CON Muraho ${userNames[phoneNumber]}, hitamo:\n1. Tora umukandida\n2. Reba amajwi`;
-    } else if (userInput.length === 3) {
+        response = userLanguages[phoneNumber] === 'en' ?
+          `CON Hi ${userNames[phoneNumber]}, choose an option:\n1. Vote Candidate\n2. View Votes` :
+          `CON Amakuru ${userNames[phoneNumber]}, hitamo:\n1. umukandida\n2. reba amajwi yabatowe`;
+      } else if (userInput.length === 3) {
         if (userInput[2] === '1') {
-            // Check if the phone number has already voted
-            if (voters.has(phoneNumber)) {
-                response = userLanguages[phoneNumber] === 'en' ? 
-                    `END You have already voted. Thank you!` : 
-                    `END Waratoye. Murakoze!`;
-            } else {
-                // Voting option selected
-                response = userLanguages[phoneNumber] === 'en' ? 
-                    `CON Select a candidate:\n1. MUTESI alice\n2. karine alice\n3. aline mukaneza\n4. eric habimana\n5. niyomukiza hawa` : 
-                    `CON Hitamo umukandida:\n1.  MUTESI alice\n2. karine alice\n3. aline mukaneza\n4. eric habimana\n5. niyomukiza hawa`;
-            }
+          // Check if the phone number has already voted... (existing logic)
+    
+          // Voting option selected
+          const candidates = await getCandidates();
+          response = userLanguages[phoneNumber] === 'en' ?
+            `CON Select a candidate:\n` :
+            `CON hitamo umukandida:\n`;
+          candidates.forEach((candidate, index) => {
+            response += `${index + 1}. ${candidate}\n`;
+          });
         } else if (userInput[2] === '2') {
-            // View votes option selected
-            response = userLanguages[phoneNumber] === 'en' ? 
-                `END Votes:\n` : 
-                `END Amajwi:\n`;
-            for (let candidate in votes) {
-                response += `${candidate}: ${votes[candidate]} votes\n`;
-            }
+          // View votes option selected
+          response = userLanguages[phoneNumber] === 'en' ?
+            `END Votes:\n` :
+            `END tora:\n`;
+          for (let candidate in votes) {
+            response += `${candidate}: ${votes[candidate]} votes\n`;
+          }
         }
-    } else if (userInput.length === 4) {
+      } 
+     else if (userInput.length === 4) {
         // Fourth level menu: Voting confirmation
         let candidateIndex = parseInt(userInput[3]) - 1;
         let candidateNames = Object.keys(votes);
@@ -117,7 +105,7 @@ app.post('/ussd', (req, res) => {
             voters.add(phoneNumber); // Mark this phone number as having voted
             response = userLanguages[phoneNumber] === 'en' ? 
                 `END Thank you for voting for ${candidateNames[candidateIndex]}!` : 
-                `END Murakoze gutora ${candidateNames[candidateIndex]}!`;
+                `END urakoze gutora ${candidateNames[candidateIndex]}!`;
 
             // Insert voting record into the database
             const voteData = {
@@ -137,7 +125,7 @@ app.post('/ussd', (req, res) => {
         } else {
             response = userLanguages[phoneNumber] === 'en' ? 
                 `END Invalid selection. Please try again.` : 
-                `END Hitamo idakwiye. Ongera mugerageze.`;
+                `END uhisemo ibitaribyo. ongera ugerageze.`;
         }
     }
 
