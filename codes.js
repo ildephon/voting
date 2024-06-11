@@ -95,6 +95,24 @@
             response += `${candidate}: ${votes[candidate]} votes\n`;
           }
         }
+                async function getCandidates() {
+  const query = 'SELECT name FROM candidates'; // Replace with your actual query
+  try {
+    const results = await db.query(query);
+    if (results.length === 0) {
+      return userLanguages[phoneNumber] === 'en' ?
+        ['There are no candidates available.'] :
+        ['Nta mikandida iriho.']; // Kinyarwanda message for no candidates
+    }
+    return results.map(row => row.name); // Extract candidate names
+  } catch (err) {
+    console.error('Error fetching candidates:', err.stack);
+    return userLanguages[phoneNumber] === 'en' ?
+      ['Error fetching candidates. Please try again.'] :
+      ['Ibibazo mu gutora abakandida. Nongerageza.']; // Kinyarwanda message for error
+  }
+}
+      }
       
      else if (userInput.length === 4) {
         // Fourth level menu: Voting confirmation
