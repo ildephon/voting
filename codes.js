@@ -95,7 +95,7 @@
             response += `${candidate}: ${votes[candidate]} votes\n`;
           }
         }
-      } 
+      
      else if (userInput.length === 4) {
         // Fourth level menu: Voting confirmation
         let candidateIndex = parseInt(userInput[3]) - 1;
