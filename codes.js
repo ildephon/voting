@@ -66,7 +66,7 @@ app.post('/ussd', (req, res) => {
         // Third level menu: Main menu
         response = userLanguages[phoneNumber] === 'en' ? 
             `CON Hi ${userNames[phoneNumber]}, choose an option:\n1. Vote Candidate\n2. View Votes` : 
-            `CON Amakuru ${userNames[phoneNumber]}, hitamo:\n1. umukandida\n2. reba abakandida`;
+            `CON Amakuru ${userNames[phoneNumber]}, hitamo:\n1. umukandida\n2. reba amajwi yabatowe`;
     } else if (userInput.length === 3) {
         if (userInput[2] === '1') {
             // Check if the phone number has already voted
