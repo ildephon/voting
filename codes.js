@@ -11,7 +11,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 const db = mysql.createConnection({
     host: 'bizhdi2fnyjg9ady7rgz-mysql.services.clever-cloud.com',
     user: 'ueuwzb6hmvo3sack',
-    password: 'bizhdi2fnyjg9ady7rgz', 
+    password: 'ueuwzb6hmvo3sack', 
     database: 'bizhdi2fnyjg9ady7rgz'
 });
 
