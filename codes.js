@@ -3,16 +3,16 @@ const bodyParser = require('body-parser');
 const mysql = require('mysql');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3306;
 
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // DB Connection
 const dbConfig = {
-    host: 'btw2bu9p01s29x8hplgj-mysql.services.clever-cloud.com',
-    user: 'u7oaqmno7he8keou',
-    password: 'RpLD6MtQImUD6trHT8hL', 
-    database: 'btw2bu9p01s29x8hplgj'
+    host: 'bsqn1h73odu88qtncxjg-mysql.services.clever-cloud.com',
+    user: 'u1dfivutbgnamhek',
+    password: 'rCUk5uPvCR5XtOqfHsxP', 
+    database: 'bsqn1h73odu88qtncxjg'
 };
 
 let db;
